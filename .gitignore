@@ -1,0 +1,70 @@
+# ---------------------------------------------------------------------------
+# Python
+# ---------------------------------------------------------------------------
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.venv/
+venv/
+env/
+.eggs/
+*.egg-info/
+build/
+dist/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+
+# ---------------------------------------------------------------------------
+# Jupyter
+# ---------------------------------------------------------------------------
+.ipynb_checkpoints/
+*.jupyter_cache/
+
+# ---------------------------------------------------------------------------
+# Dataset: images and patient level CSVs must never be committed
+# (keep the .gitkeep files so the folder layout survives)
+# ---------------------------------------------------------------------------
+data/raw/*
+data/processed/*
+data/splits/*
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+!data/splits/.gitkeep
+
+# ---------------------------------------------------------------------------
+# Training artefacts
+# ---------------------------------------------------------------------------
+*.pth
+*.pt
+*.ckpt
+*.onnx
+*.engine
+results/models/*
+!results/models/.gitkeep
+results/metrics/*
+!results/metrics/.gitkeep
+results/*.log
+wandb/
+runs/
+lightning_logs/
+
+# Generated figures are kept on purpose (they are used in the slides / README).
+
+# ---------------------------------------------------------------------------
+# OS / editors / secrets
+# ---------------------------------------------------------------------------
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+*.swp
+*.swo
+.env
+.env.*
+*.kaggle.json

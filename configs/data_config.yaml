@@ -1,0 +1,56 @@
+# ===========================================================================
+# data_config.yaml
+# Duong dan du lieu, kich thuoc anh va tham so tien xu ly cho BRSET.
+# Moi duong dan tuong doi duoc tinh tu thu muc goc cua project.
+# ===========================================================================
+
+paths:
+  raw_dir: data/raw            # giai nen BRSET goc vao day (khong commit)
+  processed_dir: data/processed # anh dau ra sau ROI + CLAHE + Resize
+  splits_dir: data/splits      # train.csv / val.csv / test.csv
+  results_dir: results
+
+image:
+  size: 384                    # anh dua vao CNN la 384 x 384
+  channels: 3
+  extensions: [".jpg", ".jpeg", ".png", ".tif", ".tiff", ".bmp"]
+
+preprocessing:
+  # 1) Cat vien den xung quanh anh fundus
+  roi:
+    enabled: true
+    threshold: 7               # nguong xam de tach vung anh khoi nen den
+    margin: 0                  # giu them N pixel quanh bounding box
+    min_area_ratio: 0.05       # bo qua bbox qua nho (nhieu / anh loi)
+
+  # 2) Can bang do tuong phan cuc bo tren kenh L cua khong gian mau LAB
+  clahe:
+    enabled: true
+    clip_limit: 2.0
+    tile_grid_size: [8, 8]
+
+  # 3) Mặt nạ hình tròn: xoa 4 goc den, tranh model hoc vien anh
+  circular_mask:
+    enabled: true
+    radius_ratio: 0.5          # 0.5 = duong tron noi tiep canh ngan
+
+splits:
+  patient_column: patient_id
+  label_column: label
+  image_path_column: image_path
+  val_size: 0.15               # 15% benh nhan cho validation
+  test_size: 0.15              # 15% benh nhan cho test
+  seed: 42
+  train_csv: train.csv
+  val_csv: val.csv
+  test_csv: test.csv
+
+classes:
+  num_classes: 5
+  # Thu tu phai khop voi nhan 0..4 trong file CSV
+  names:
+    - "No DR"          # 0 - khong co dau hieu
+    - "Mild"           # 1 - nhe
+    - "Moderate"       # 2 - trung binh
+    - "Severe"         # 3 - nang
+    - "Proliferative"  # 4 - tang sinh

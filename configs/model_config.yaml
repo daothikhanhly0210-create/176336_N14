@@ -1,0 +1,58 @@
+# ===========================================================================
+# model_config.yaml
+# Hyperparameters da chot: AdamW, LR = 1e-4, Batch = 32, Patience = 5.
+# ===========================================================================
+
+training:
+  epochs: 30
+  batch_size: 32
+  num_workers: 4               # tren Windows se tu dong ha ve 0
+  seed: 42
+  amp: true                    # mixed precision (chi bat khi co CUDA)
+  grad_clip: 0.0               # 0 = tat gradient clipping
+
+  optimizer:
+    name: adamw
+    lr: 1.0e-4
+    weight_decay: 1.0e-4
+
+  scheduler:
+    name: cosine               # cosine | step | none
+    eta_min: 0.0
+    warmup_epochs: 1
+
+  loss:
+    name: cross_entropy        # cross_entropy | focal
+    class_weighting: sqrt      # none | sqrt | inverse
+    label_smoothing: 0.0
+
+  early_stopping:
+    monitor: val_f1_macro      # chi so theo doi
+    mode: max
+    patience: 5
+    min_delta: 0.001
+
+  checkpoint_dir: results/models
+  history_csv: results/metrics/train_history.csv
+
+# ---------------------------------------------------------------------------
+# Ba backbone duoc so sanh trong bao cao
+# ---------------------------------------------------------------------------
+models:
+  - name: resnet18
+    pretrained: true
+    dropout: 0.2
+
+  - name: densenet121
+    pretrained: true
+    dropout: 0.2
+
+  - name: efficientnet_b0
+    pretrained: true
+    dropout: 0.2
+
+# Ten file trong luong tuong ung (dat trong results/models/)
+checkpoints:
+  resnet18: resnet18_best.pth
+  densenet121: densenet121_best.pth
+  efficientnet_b0: efficientnet_b0_best.pth

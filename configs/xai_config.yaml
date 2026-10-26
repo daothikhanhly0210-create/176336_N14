@@ -1,0 +1,24 @@
+# ===========================================================================
+# xai_config.yaml
+# Cau hinh Grad-CAM: target layer (feature map cuoi) cho tung backbone.
+# ===========================================================================
+
+gradcam:
+  method: gradcam              # gradcam | gradcam++ | scorecam | eigencam
+  alpha: 0.4                   # do dam cua heatmap khi overlay
+  colormap: jet                # jet | turbo | inferno | magma
+  image_size: 384
+  output_dir: results/figures
+
+  # Duong dan thuoc tinh / chi so toi module tich chap cuoi cung.
+  # Cu phap: "layer4[-1]" = model.layer4[-1] (module cuoi cua layer4).
+  target_layers:
+    resnet18: layer4[-1]
+    densenet121: features.denseblock4
+    efficientnet_b0: features[-1]
+
+  # Cau hinh cho buoc sanity check (hinh anh minh hoa trong bao cao)
+  sanity_check:
+    num_samples: 4
+    output_path: results/figures/gradcam_sanity_check.png
+    dpi: 200
