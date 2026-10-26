@@ -8,7 +8,7 @@
   <img src="https://img.shields.io/badge/XAI-Grad--CAM-orange" alt="XAI">
 </p>
 
-Đồ án phân loại **5 mức độ bệnh võng mạc đái tháo đường** (Diabetic Retinopathy) trên bộ dữ liệu **BRSET** (16.266 ảnh fundus, 8.524 bệnh nhân), so sánh ba kiến trúc **ResNet18 – DenseNet121 – EfficientNet-B0**, kèm **Grad-CAM** để giải thích quyết định của mô hình.
+Đề tài phân loại **5 mức độ bệnh võng mạc đái tháo đường** (Diabetic Retinopathy) trên bộ dữ liệu **BRSET** (16.266 ảnh fundus, 8.524 bệnh nhân), so sánh ba kiến trúc **ResNet18 – DenseNet121 – EfficientNet-B0**, kèm **Grad-CAM** để giải thích quyết định của mô hình.
 
 ---
 
