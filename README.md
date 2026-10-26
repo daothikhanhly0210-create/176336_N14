@@ -101,8 +101,8 @@ BRSET raw (.jpg, ảnh gốc + CSV nhãn)
 ## 5. Cài đặt
 
 ```bash
-git clone https://github.com/daothikhanhly0210-create/Phan-loai-muc-do-benh-vong-mac-dai-thao-duong-Diabetic-Retinopathy-.git
-cd Phan-loai-muc-do-benh-vong-mac-dai-thao-duong-Diabetic-Retinopathy-
+git clone https://github.com/daothikhanhly0210-create/176336_N14.git
+cd 176336_N14
 
 python -m venv .venv
 # Windows
@@ -245,4 +245,4 @@ pytest -q
 ## 13. Liên hệ
 
 - GitHub: [@daothikhanhly0210-create](https://github.com/daothikhanhly0210-create)
-- Repository: [Phan-loai-muc-do-benh-vong-mac-dai-thao-duong-Diabetic-Retinopathy-](https://github.com/daothikhanhly0210-create/Phan-loai-muc-do-benh-vong-mac-dai-thao-duong-Diabetic-Retinopathy-)
+- Repository: [176336_N14](https://github.com/daothikhanhly0210-create/176336_N14)
