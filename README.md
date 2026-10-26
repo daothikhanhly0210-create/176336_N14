@@ -233,14 +233,7 @@ pytest -q
 
 ## 12. Trích dẫn
 
-```bibtex
-@article{brset2023,
-  title   = {BRSET: A Brazilian Multilabel Ophthalmological Dataset of Retina Fundus Photos},
-  author  = {Nakayama, Luis Filipe and others},
-  year    = {2023},
-  note    = {TODO: cập nhật đúng venue/DOI của phiên bản BRSET bạn sử dụng}
-}
-```
+* Dữ liệu được sử dụng trong đồ án: **Nakayama et al. (2024). BRSET: A Brazilian Multilabel Ophthalmological Dataset of Retina Fundus Photos.** [Link Kaggle](https://www.kaggle.com/datasets/tanzinabdul/fundus-patientwise-split)
 
 ## 13. Liên hệ
 
