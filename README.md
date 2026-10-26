@@ -27,7 +27,7 @@
 
 > Bảng dưới đây được điền tự động từ `results/metrics/model_comparison.csv` sau khi chạy `notebooks/03_model_training_colab.ipynb`.
 
-| Model | Params | Accuracy | F1-macro | QWK | Sensitivity | Specificity |
+| Model | Params | Accuracy | F1-macro | Sensitivity | Specificity |
 |-------|-------:|---------:|---------:|----:|------------:|------------:|
 | ResNet18 | – | – | – | – | – | – |
 | DenseNet121 | – | – | – | – | – | – |
