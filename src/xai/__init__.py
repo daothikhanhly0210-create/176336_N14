@@ -1,17 +1,6 @@
-"""Explainability (Grad-CAM and friends)."""
+"""
+Module Giải thích AI (Explainable AI - XAI).
+Bao gồm kỹ thuật Grad-CAM.
+"""
 
-from src.xai.gradcam import (
-    GradCAMExplainer,
-    build_explainer,
-    denormalize,
-    overlay_cam,
-    sanity_check,
-)
-
-__all__ = [
-    "GradCAMExplainer",
-    "build_explainer",
-    "overlay_cam",
-    "denormalize",
-    "sanity_check",
-]
+from .gradcam import generate_gradcam, get_target_layers
