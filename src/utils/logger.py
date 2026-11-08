@@ -1,57 +1,28 @@
-"""Console + file logger shared by every script and notebook."""
-
-from __future__ import annotations
-
 import logging
-import sys
-from pathlib import Path
-from typing import Optional, Union
+import os
 
-PROJECT_ROOT = Path(__file__).resolve().parents[2]
-DEFAULT_LOG_FILE = PROJECT_ROOT / "results" / "train.log"
-
-_LOG_FORMAT = "%(asctime)s | %(levelname)-8s | %(name)s | %(message)s"
-_DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
-
-__all__ = ["get_logger", "DEFAULT_LOG_FILE"]
-
-
-def get_logger(
-    name: str = "brset",
-    log_file: Optional[Union[str, Path]] = None,
-    level: int = logging.INFO,
-) -> logging.Logger:
-    """Return a configured logger (idempotent).
-
-    Parameters
-    ----------
-    name:
-        Logger name; use one logger per module (``get_logger(__name__)``).
-    log_file:
-        Destination file. Defaults to ``results/train.log``; pass ``False`` to
-        disable file logging (useful inside unit tests).
-    level:
-        Logging level for the logger itself.
+def setup_logger(log_file="training.log"):
     """
-    logger = logging.getLogger(name)
-    logger.setLevel(level)
-    logger.propagate = False
-
-    if getattr(logger, "_brset_configured", False):
+    Thiết lập logger để ghi log ra màn hình và file.
+    """
+    logger = logging.getLogger("BRSET_Project")
+    logger.setLevel(logging.INFO)
+    
+    # Nếu logger đã được cấu hình trước đó thì không làm lại
+    if logger.handlers:
         return logger
 
-    formatter = logging.Formatter(_LOG_FORMAT, datefmt=_DATE_FORMAT)
+    # Định dạng log: Thời gian - Mức độ - Nội dung
+    formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
 
-    stream_handler = logging.StreamHandler(stream=sys.stdout)
-    stream_handler.setFormatter(formatter)
-    logger.addHandler(stream_handler)
+    # 1. Ghi ra màn hình (Console)
+    console_handler = logging.StreamHandler()
+    console_handler.setFormatter(formatter)
+    logger.addHandler(console_handler)
 
-    if log_file is not False:
-        target = Path(log_file) if log_file else DEFAULT_LOG_FILE
-        target.parent.mkdir(parents=True, exist_ok=True)
-        file_handler = logging.FileHandler(target, encoding="utf-8")
-        file_handler.setFormatter(formatter)
-        logger.addHandler(file_handler)
+    # 2. Ghi ra file (File)
+    file_handler = logging.FileHandler(log_file, encoding='utf-8')
+    file_handler.setFormatter(formatter)
+    logger.addHandler(file_handler)
 
-    logger._brset_configured = True  # type: ignore[attr-defined]
     return logger
