@@ -1,1 +1,1 @@
-"""Automated tests for the BRSET diabetic retinopathy project."""
+# Test package for BRSET project
