@@ -37,4 +37,6 @@ def generate_gradcam(model, model_name, input_tensor, rgb_image, true_label, dev
     # 5. Đè bản đồ nhiệt lên ảnh gốc
     visualization = show_cam_on_image(rgb_image, grayscale_cam, use_rgb=True)
     
+        # Đảm bảo ảnh trả về luôn là hệ màu RGB (Bọc thép chống lỗi màu)
+    visualization = cv2.cvtColor(visualization, cv2.COLOR_BGR2RGB) 
     return visualization
