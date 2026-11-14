@@ -43,34 +43,57 @@ Hình ảnh minh hoạ nằm trong `results/figures/`:
 
 ```text
 diabetic_retinopathy_brset/
-├── configs/
-│   ├── data_config.yaml              # Đường dẫn, 384x384, tham số ROI/CLAHE/mask
-│   ├── model_config.yaml             # AdamW, LR=1e-4, Batch=32, Patience=5
-│   └── xai_config.yaml               # Target layer Grad-CAM cho từng model
-├── data/
-│   ├── raw/                          # Dữ liệu BRSET gốc (không commit)
-│   ├── processed/                    # Ảnh sau ROI + CLAHE + Resize (không commit)
-│   └── splits/                       # train.csv / val.csv / test.csv (không commit)
-├── docs/
-│   └── BRSET_DATASET_DOCUMENTATION.md
-├── notebooks/
-│   ├── 01_eda_visualization.ipynb    # Phân bố nhãn, kiểm tra 2 mắt, biểu đồ
-│   ├── 02_preprocessing_pipeline.ipynb # Test hàm ROI/CLAHE, xử lý hàng loạt
-│   └── 03_model_training_colab.ipynb # Train, Test, Grad-CAM
+├── main.py                           # Pipeline điều khiển toàn bộ quá trình (Train/Evaluate)
+├── configs/                          # Chứa các file cấu hình YAML (data_config, model_config, xai_config...)
+├── data/                             # Chứa file link tải dữ liệu BRSET (không chứa ảnh gốc)
+├── docs/                             # Tài liệu dự án
+├── notebooks/                        # Script huấn luyện (ResNet, DenseNet, EfficientNet)
 ├── results/
-│   ├── figures/                      # Hình cho slide/báo cáo
-│   ├── metrics/                      # CSV kết quả F1/Accuracy/QWK
-│   └── models/                       # Trọng số .pth (không commit)
+│   ├── figures/                      # Chứa ảnh kết quả (Confusion Matrix, Grad-CAM)
+│   ├── metrics/                      # Chứa file báo cáo kết quả (model_comparison.csv)
+│   └── models/                       # Lưu trọng số mô hình (.pth)
 ├── src/
-│   ├── data/                         # DRDataset, patient-level split
-│   ├── preprocessing/                # roi_cropper, enhancement, circular_mask
-│   ├── models/                       # architectures, losses, trainer
-│   ├── evaluation/                   # metrics, error_analysis
-│   ├── xai/                          # gradcam
-│   └── utils/                        # config, logger
-├── tests/                            # pytest: data leakage + preprocessing
+│   ├── __init__.py
+│   ├── data/                         
+│   │   ├── __init__.py
+│   │   ├── dataset.py                # Xử lý dữ liệu, hàm build_dataloaders
+│   │   └── splitters.py              # Chia tập Patient-level, kiểm tra rò rỉ dữ liệu
+│   ├── preprocessing/                
+│   │   ├── __init__.py
+│   │   ├── batch_process.py
+│   │   ├── circular_mask.py          # Tạo mặt nạ tròn (chống Shortcut Learning)
+│   │   ├── enhancement.py            # CLAHE trên không gian màu LAB
+│   │   ├── roi_cropper.py            # Auto-Crop vùng ROI
+│   │   └── transforms.py             # [MỚI] Chứa Data Augmentation (Flip, Rotation, Jitter)
+│   ├── models/                       
+│   │   ├── __init__.py
+│   │   ├── architectures.py          # Khởi tạo ResNet, DenseNet, EfficientNet
+│   │   ├── losses.py                 # Weighted Cross-Entropy (xử lý mất cân bằng)
+│   │   ├── optimizer.py              # [MỚI] Khởi tạo AdamW
+│   │   ├── scheduler.py              # [MỚI] Khởi tạo CosineAnnealingLR
+│   │   └── trainer.py                # Vòng lặp huấn luyện, AMP
+│   ├── evaluation/                   
+│   │   ├── __init__.py
+│   │   ├── error_analysis.py         # Phân tích FP/FN
+│   │   ├── evaluator.py              # [MỚI] Chạy đánh giá, xuất kết quả ra file
+│   │   └── metrics.py                # Tính Accuracy, F1-macro, QWK, Sensitivity
+│   ├── xai/                          
+│   │   ├── __init__.py
+│   │   └── gradcam.py                # Trực quan hóa vùng AI chú ý
+│   └── utils/                        
+│       ├── __init__.py
+│       ├── checkpoint.py             # [MỚI] Lưu/Tải trọng số mô hình
+│       ├── config.py                 # Đọc file cấu hình YAML
+│       ├── early_stopping.py         # [MỚI] Dừng sớm (Patience=5)
+│       ├── logger.py                 # Ghi log quá trình chạy
+│       └── seed.py                   # [MỚI] Đảm bảo tính tái lập (Reproducibility)
+├── tests/                            # Kiểm thử tự động (Pytest)
+│   ├── test_data_leakage.py          # Kiểm tra rò rỉ dữ liệu
+│   └── test_preprocessing.py         # Kiểm tra pipeline tiền xử lý
+├── .gitattributes
+├── .gitignore
+├── pyproject.toml                    # [MỚI] Quản lý metadata dự án
 ├── requirements.txt
-├── pyproject.toml
 └── README.md
 ```
 
