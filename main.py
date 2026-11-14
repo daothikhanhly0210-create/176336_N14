@@ -4,14 +4,15 @@ import os
 import glob
 import pandas as pd
 import torch
-import torch.optim as optim
 from torch.utils.data import DataLoader
 
 # Import các module từ thư mục src/
 from src.data.dataset import DRDataset
-from src.preprocessing.transforms import get_train_transforms, get_val_test_transforms # IMPORT MỚI
+from src.preprocessing.transforms import get_train_transforms, get_val_test_transforms
 from src.models.architectures import get_model
 from src.models.losses import get_weighted_loss
+from src.models.optimizer import build_optimizer       # IMPORT MỚI
+from src.models.scheduler import build_scheduler       # IMPORT MỚI
 from src.models.trainer import train_model
 from src.evaluation.metrics import calculate_metrics
 from src.evaluation.error_analysis import plot_confusion_matrix, plot_fp_fn_chart
@@ -40,7 +41,7 @@ def main(args):
     # 2. CHUẨN BỊ DỮ LIỆU VÀ TRANSFORMS
     print(f"Đang tải dữ liệu cho mô hình: {args.model_name}...")
     
-    # SỬ DỤNG TRANSFORMS TỪ MODULE MỚI
+    # Sử dụng transforms từ module
     train_transform = get_train_transforms(image_size=384) # Có Augmentation
     val_test_transform = get_val_test_transforms(image_size=384) # Chỉ Normalize
     
@@ -49,8 +50,8 @@ def main(args):
     df_val = pd.read_csv(f"{BASE}/val/val.csv")
     df_test = pd.read_csv(f"{BASE}/test/test.csv")
 
-    # Gán đúng transform cho từng tập
-    train_dataset = DRDataset(df_train, f"{PROC}/train", transform=train_transform) # ĐÃ SỬA: Dùng train_transform
+    # Gán transform tương ứng
+    train_dataset = DRDataset(df_train, f"{PROC}/train", transform=train_transform)
     val_dataset = DRDataset(df_val, f"{PROC}/val", transform=val_test_transform)
     test_dataset = DRDataset(df_test, f"{PROC}/test", transform=val_test_transform)
 
@@ -61,15 +62,16 @@ def main(args):
     val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False, num_workers=4, pin_memory=True)
     test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False, num_workers=4, pin_memory=True)
 
-    # 3. KHỞI TẠO MÔ HÌNH, LOSS VÀ OPTIMIZER
+    # 3. KHỞI TẠO MÔ HÌNH, LOSS, OPTIMIZER, SCHEDULER
     print(f"Đang khởi tạo mô hình {args.model_name}...")
     model = get_model(model_name=args.model_name, num_classes=5, pretrained=True).to(device)
 
-    # Hàm Loss có trọng số (Weighted Cross-Entropy)
+    # Hàm Loss có trọng số
     criterion, _ = get_weighted_loss(df_train["DR_ICDR"].values, num_classes=5, device=device)
 
-    optimizer = optim.AdamW(model.parameters(), lr=args.lr, weight_decay=1e-4)
-    scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=args.epochs)
+    # SỬ DỤNG HÀM BUILD TỪ MODULE MỚI
+    optimizer = build_optimizer(model, lr=args.lr, weight_decay=1e-4)
+    scheduler = build_scheduler(optimizer, epochs=args.epochs)
     scaler = torch.amp.GradScaler('cuda')
 
     # 4. HUẤN LUYỆN MÔ HÌNH
@@ -110,7 +112,7 @@ def main(args):
     plot_confusion_matrix(all_labels, all_preds, class_names, save_path=f"results/figures/{args.model_name}_confusion_matrix.png")
     plot_fp_fn_chart(df_fp_fn, save_path=f"results/figures/{args.model_name}_fp_fn_chart.png")
 
-    print("\nHoàn thành toàn bộ Pipeline!")
+    print("\nHoàn thành toàn bộ Pipeline! Kết quả đã được lưu tại thư mục 'results/'.")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Pipeline Phân loại bệnh võng mạc đái tháo đường")
