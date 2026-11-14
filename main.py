@@ -6,24 +6,22 @@ import pandas as pd
 import torch
 import torch.optim as optim
 from torch.utils.data import DataLoader
-import albumentations as A
-from albumentations.pytorch import ToTensorV2
 
 # Import các module từ thư mục src/
 from src.data.dataset import DRDataset
+from src.preprocessing.transforms import get_train_transforms, get_val_test_transforms # IMPORT MỚI
 from src.models.architectures import get_model
 from src.models.losses import get_weighted_loss
 from src.models.trainer import train_model
 from src.evaluation.metrics import calculate_metrics
 from src.evaluation.error_analysis import plot_confusion_matrix, plot_fp_fn_chart
-from src.xai.gradcam import generate_gradcam
 
 def main(args):
     # 1. CÀI ĐẶT THIẾT BỊ VÀ ĐƯỜNG DẪN
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"Thiết bị đang sử dụng: {device}")
 
-    # Tự động tìm dữ liệu (giống code trên Kaggle của bạn)
+    # Tự động tìm dữ liệu
     train_csv_paths = glob.glob("/kaggle/input/**/train.csv", recursive=True)
     if not train_csv_paths:
         train_csv_paths = glob.glob("./data/**/train.csv", recursive=True)
@@ -32,30 +30,29 @@ def main(args):
         raise FileNotFoundError("Không tìm thấy file dữ liệu train.csv. Vui lòng kiểm tra lại!")
     
     BASE = os.path.dirname(os.path.dirname(train_csv_paths[0]))
-    PROC = os.path.join(BASE, "processed") # Thư mục chứa ảnh đã tiền xử lý
+    PROC = os.path.join(BASE, "processed")
 
     # Tạo thư mục kết quả
     os.makedirs("results/metrics", exist_ok=True)
     os.makedirs("results/figures", exist_ok=True)
     os.makedirs("results/models", exist_ok=True)
 
-    # 2. CHUẨN BỊ DỮ LIỆU
+    # 2. CHUẨN BỊ DỮ LIỆU VÀ TRANSFORMS
     print(f"Đang tải dữ liệu cho mô hình: {args.model_name}...")
     
-    # Transform (Chỉ Normalize vì ảnh đã được tiền xử lý)
-    val_transform = A.Compose([
-        A.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225)), 
-        ToTensorV2()
-    ])
+    # SỬ DỤNG TRANSFORMS TỪ MODULE MỚI
+    train_transform = get_train_transforms(image_size=384) # Có Augmentation
+    val_test_transform = get_val_test_transforms(image_size=384) # Chỉ Normalize
     
     # Đọc CSV
     df_train = pd.read_csv(f"{BASE}/train/train.csv")
     df_val = pd.read_csv(f"{BASE}/val/val.csv")
     df_test = pd.read_csv(f"{BASE}/test/test.csv")
 
-    train_dataset = DRDataset(df_train, f"{PROC}/train", transform=val_transform) # (Lưu ý: Nên thay bằng train_transform có Augmentation)
-    val_dataset = DRDataset(df_val, f"{PROC}/val", transform=val_transform)
-    test_dataset = DRDataset(df_test, f"{PROC}/test", transform=val_transform)
+    # Gán đúng transform cho từng tập
+    train_dataset = DRDataset(df_train, f"{PROC}/train", transform=train_transform) # ĐÃ SỬA: Dùng train_transform
+    val_dataset = DRDataset(df_val, f"{PROC}/val", transform=val_test_transform)
+    test_dataset = DRDataset(df_test, f"{PROC}/test", transform=val_test_transform)
 
     # Batch size (DenseNet cần nhỏ hơn để tránh tràn RAM)
     batch_size = 16 if args.model_name == "densenet121" else 32
@@ -112,15 +109,6 @@ def main(args):
     # Vẽ và lưu biểu đồ
     plot_confusion_matrix(all_labels, all_preds, class_names, save_path=f"results/figures/{args.model_name}_confusion_matrix.png")
     plot_fp_fn_chart(df_fp_fn, save_path=f"results/figures/{args.model_name}_fp_fn_chart.png")
-
-    # 6. XAI (GRAD-CAM) - Demo trên 1 ảnh
-    print("\nĐang tạo bản đồ nhiệt Grad-CAM mẫu...")
-    # (Bạn có thể viết vòng lặp cho 5 lớp giống hệt code trên Kaggle)
-    sample_img = next(iter(test_loader))[0][0].unsqueeze(0).to(device) 
-    sample_label = next(iter(test_loader))[1][0].item()
-    
-    # Lưu ý: Cần hàm transform ngược (denormalize) để hiển thị ảnh đúng màu
-    # Tạm thời tôi giữ nguyên logic cơ bản, bạn có thể tinh chỉnh thêm
 
     print("\nHoàn thành toàn bộ Pipeline!")
 
