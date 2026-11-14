@@ -27,11 +27,11 @@
 
 > Bảng dưới đây được điền tự động từ `results/metrics/model_comparison.csv` sau khi chạy `notebooks/03_model_training_colab.ipynb`.
 
-| Model | Params | Accuracy | F1-macro | Sensitivity | Specificity |
-|-------|-------:|---------:|---------:|------------:|------------:|
-| ResNet18 | – | – | – | – | – |
-| DenseNet121 | – | – | – | – | – |
-| EfficientNet-B0 | – | – | – | – | – |
+| Model | Params | Accuracy | F1-macro | Sensitivity (Nhãn 4) | Specificity (Nhãn 4) |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| ResNet18 | 11.2M | 93.08% | 53.86% | 80.77% | 98.28% |
+| DenseNet121 | 8.0M | 94.19% | 54.81% | 82.69% | 98.12% |
+| EfficientNet-B0 | 5.3M | 94.69% | 59.31% | 78.85% | 98.91% |
 
 Hình ảnh minh hoạ nằm trong `results/figures/`:
 
