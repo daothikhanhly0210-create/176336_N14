@@ -43,8 +43,7 @@ Hình ảnh minh hoạ nằm trong `results/figures/`:
 
 ```text
 diabetic_retinopathy_brset/
-├── main.py                           # Pipeline điều khiển toàn bộ quá trình (Train/Evaluate)
-├── app.py                            # Giao diện web Streamlit 
+├── main.py                           # Pipeline điều khiển toàn bộ quá trình (Train/Evaluate) 
 ├── configs/                          # Chứa các file cấu hình YAML (data_config, model_config, xai_config...)
 ├── data/                             # Chứa file link tải dữ liệu BRSET (không chứa ảnh gốc)
 ├── docs/                             # Tài liệu dự án
